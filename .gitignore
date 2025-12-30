@@ -1,5 +1,6 @@
 *.code-workspace
 .obsidian/*
+local.reference/*
 
 # Claude Code - Personal/Local files (do not commit)
 .claude/settings.local.json
@@ -13,3 +14,10 @@ CLAUDE.local.md
 # .claude/agents/
 # .claude/hooks/
 # CLAUDE.md
+
+# Build artifacts
+dist/
+tools/packaging/staging/
+*.msi
+*.wixpdb
+*.wixobj

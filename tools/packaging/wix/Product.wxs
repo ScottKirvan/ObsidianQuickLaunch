@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!--
+    ObsidianQuickLaunch WiX Installer
+    This installer packages PowerShell scripts and registers Windows Explorer context menus
+  -->
+
+  <!-- Product Configuration -->
+  <?define ProductName = "ObsidianQuickLaunch" ?>
+  <?define Manufacturer = "Scott Kirvan" ?>
+  <?define UpgradeCode = "A7F8B9C0-1D2E-4F5A-8B7C-9D6E5F4A3B2C" ?>
+  <?define InfoURL = "https://github.com/ScottKirvan/ObsidianQuickLaunch" ?>
+
+  <Product
+    Id="*"
+    Name="$(var.ProductName)"
+    Language="1033"
+    Version="$(var.ProductVersion)"
+    Manufacturer="$(var.Manufacturer)"
+    UpgradeCode="$(var.UpgradeCode)">
+
+    <!-- Package Properties -->
+    <Package
+      Id="*"
+      Keywords="Installer"
+      Description="ObsidianQuickLaunch - Windows Explorer context menu for opening Obsidian vaults"
+      Comments="Quick vault registration and opening for Obsidian"
+      InstallerVersion="200"
+      Compressed="yes"
+      InstallScope="perMachine"
+      Platform="x64" />
+
+    <!-- Set properties for Add/Remove Programs -->
+    <Property Id="ARPHELPLINK" Value="$(var.InfoURL)" />
+    <Property Id="ARPURLINFOABOUT" Value="$(var.InfoURL)" />
+
+    <!-- Major Upgrade Configuration -->
+    <MajorUpgrade
+      AllowSameVersionUpgrades="yes"
+      DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed." />
+
+    <!-- Embed Cabinet Files in Product -->
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- UI Configuration -->
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    <!-- Installation Directory Structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)">
+          <!-- Files will be added here by heat.exe during build -->
+        </Directory>
+      </Directory>
+
+      <!-- Start Menu Shortcut -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
+      </Directory>
+    </Directory>
+
+    <!-- Main Feature -->
+    <Feature Id="MainFeature" Title="$(var.ProductName)" Level="1">
+      <ComponentGroupRef Id="ProductFiles" />
+      <ComponentRef Id="ContextMenuRegistration" />
+      <ComponentRef Id="StartMenuShortcuts" />
+    </Feature>
+
+    <!-- Custom Action: Detect Obsidian path for icon (optional) -->
+    <Property Id="OBSIDIANPATH">
+      <RegistrySearch
+        Id="SearchObsidianPath"
+        Root="HKCR"
+        Key="obsidian\shell\open\command"
+        Type="raw" />
+    </Property>
+
+    <!-- Windows Explorer Context Menu Registration -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="ContextMenuRegistration" Guid="B8E9F0A1-2C3D-4E5F-9A8B-7C6D5E4F3A2B" Win64="yes">
+        <!-- Context Menu: Right-click ON a folder -->
+        <RegistryKey Root="HKCR" Key="Directory\shell\ObsidianQuickLaunch">
+          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault" />
+
+          <RegistryKey Key="command">
+            <RegistryValue
+              Type="string"
+              Value="powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\register-vault-final.ps1&quot; &quot;%V&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Context Menu: Right-click IN a folder (background) -->
+        <RegistryKey Root="HKCR" Key="Directory\Background\shell\ObsidianQuickLaunch">
+          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault" />
+
+          <RegistryKey Key="command">
+            <RegistryValue
+              Type="string"
+              Value="powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\register-vault-final.ps1&quot; &quot;%V&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Registry key for uninstall tracking -->
+        <RegistryKey Root="HKLM" Key="Software\$(var.Manufacturer)\$(var.ProductName)">
+          <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
+          <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Start Menu Shortcuts -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="StartMenuShortcuts" Guid="C9F0A1B2-3D4E-5F6A-9B8C-7D6E5F4A3B2D" Win64="yes">
+        <!-- Uninstall shortcut -->
+        <Shortcut
+          Id="UninstallShortcut"
+          Name="Uninstall $(var.ProductName)"
+          Description="Uninstall $(var.ProductName)"
+          Target="[SystemFolder]msiexec.exe"
+          Arguments="/x [ProductCode]" />
+
+        <!-- Manual install script shortcut (for advanced users) -->
+        <Shortcut
+          Id="ManualInstallShortcut"
+          Name="Manually Install Context Menu"
+          Description="Run manual context menu installation (requires Admin)"
+          Target="[SystemFolder]WindowsPowerShell\v1.0\powershell.exe"
+          Arguments="-NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\install-context-menu.ps1&quot;"
+          WorkingDirectory="INSTALLFOLDER" />
+
+        <!-- Manual uninstall script shortcut (for advanced users) -->
+        <Shortcut
+          Id="ManualUninstallShortcut"
+          Name="Manually Uninstall Context Menu"
+          Description="Run manual context menu uninstallation (requires Admin)"
+          Target="[SystemFolder]WindowsPowerShell\v1.0\powershell.exe"
+          Arguments="-NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\uninstall-context-menu.ps1&quot;"
+          WorkingDirectory="INSTALLFOLDER" />
+
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+
+        <!-- Required keypath for component -->
+        <RegistryValue
+          Root="HKCU"
+          Key="Software\$(var.Manufacturer)\$(var.ProductName)"
+          Name="StartMenuShortcuts"
+          Type="integer"
+          Value="1"
+          KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+
+  </Product>
+</Wix>

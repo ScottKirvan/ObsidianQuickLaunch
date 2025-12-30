@@ -15,12 +15,17 @@ ObsidianQuickLaunch adds Windows Explorer context menu entries that allow you to
 - Preserves all currently open vaults and workspaces
 - Automatic Obsidian installation detection
 - Obsidian icon in context menu
+- Professional MSI installer with automatic registry configuration
 
 ## Quick Start
 
 For complete installation and usage instructions, see **[User Documentation](notes/README.md)**.
 
 **TL;DR:**
+1. Download and install `ObsidianQuickLaunch-{version}.msi` (requires Administrator)
+2. Right-click any folder → "Open as Obsidian Vault"
+
+**Manual Installation:**
 1. Run `.\src\scripts\install-context-menu.ps1` as Administrator
 2. Right-click any folder → "Open as Obsidian Vault"
 
@@ -28,7 +33,9 @@ For complete installation and usage instructions, see **[User Documentation](not
 
 ```
 ObsidianQuickLaunch/
+├── Build-Installer.ps1   # MSI installer build script
 ├── src/scripts/          # Production PowerShell scripts
+├── tools/packaging/      # WiX build system and packaging module
 ├── tests/                # Development test scripts
 ├── notes/                # User documentation and project notes
 ├── .github/              # GitHub workflows and templates
@@ -39,9 +46,32 @@ ObsidianQuickLaunch/
 
 This project uses:
 - **PowerShell scripts** for Windows integration
+- **WiX Toolset 3.x** for MSI installer packaging
 - **Release-Please** for automated versioning
 - **Conventional Commits** for changelog generation
 - **GitHub Actions** for CI/CD (planned)
+
+### Prerequisites
+
+**For Users:**
+- Windows 10/11
+- Obsidian installed (any version)
+- Administrator privileges (for installation)
+
+**For Developers:**
+- Windows 10/11
+- PowerShell 5.1 or later
+- [WiX Toolset v3.14](https://wixtoolset.org/releases/) (for building MSI installer)
+- Git (for version control)
+
+### Building the Installer
+
+See [notes/BUILD.md](notes/BUILD.md) for detailed build instructions.
+
+**Quick Build:**
+```powershell
+.\Build-Installer.ps1 rebuild
+```
 
 ### Contributing
 

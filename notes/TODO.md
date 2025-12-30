@@ -18,6 +18,13 @@
 - [x] Handle case when Obsidian is not running
 - [x] Open new vault last (on top) when multiple vaults open
 - [x] Project structure organization (src/, tests/, notes/)
+- [x] WiX Toolset 3.x MSI installer
+  - [x] PowerShell build system following Microsoft PowerShell project patterns
+  - [x] Dynamic file harvesting with heat.exe
+  - [x] Automatic registry configuration
+  - [x] Start Menu shortcuts for uninstall and manual scripts
+  - [x] Clean/Build/Rebuild actions
+  - [x] Version auto-detection from release-please manifest
 
 ## Phase 2: Template System 🚧 PLANNED
 
@@ -49,15 +56,22 @@
 
 ## Distribution & Packaging
 
+### Done ✓
+- [x] Create MSI installer package (WiX 3.x)
+
 ### TODO
-- [ ] Create installer package (MSI/EXE)
-- [ ] Code signing certificate
+- [ ] Code signing certificate for MSI
+- [ ] GitHub Actions workflow for automated builds
 - [ ] Chocolatey package
 - [ ] WinGet package manifest
 - [ ] Scoop manifest
 - [ ] Automatic update mechanism
 
 ## Future Enhancements
+
+### Near Term
+- [ ] Change context menu text to "QuickLaunch Obsidian here"
+- [ ] Add custom icon for installer/application
 
 ### Nice to Have
 - [ ] Custom icon option for context menu
@@ -91,5 +105,5 @@
 
 ---
 
-**Last Updated:** 2025-12-16
-**Current Phase:** Phase 1 Complete, Phase 2 Planning
+**Last Updated:** 2024-12-30
+**Current Phase:** Phase 1 Complete (including MSI installer), Phase 2 Planning

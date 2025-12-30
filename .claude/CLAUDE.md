@@ -25,11 +25,19 @@ This project uses Scott Kirvan's GitHub template structure:
 - Version managed in `.github/release-please/.release-please-manifest.json`
 - CHANGELOG maintained automatically in `notes/CHANGELOG.md`
 
+### Build & Packaging
+- **Build System**: WiX Toolset 3.x-based MSI installer
+- **Build Pattern**: Follows Microsoft PowerShell project's approach (PowerShell scripts generate WiX installers)
+- **Build Script**: `Build-Installer.ps1` orchestrates the build process
+- **Packaging Module**: `tools/packaging/packaging.psm1` contains WiX build functions
+- **Output**: MSI installer in `dist/ObsidianQuickLaunch-{version}.msi`
+
 ### CI/CD & Testing (Future)
 - Implement unit tests as project matures
-- Use GitHub Actions for build automation
+- Use GitHub Actions for automated MSI builds on releases
 - Integrate testing into release cycle
 - PowerShell Pester tests for script validation
+- Automated installer testing
 
 ### Documentation Responsibilities
 **Claude Code will:**
@@ -48,9 +56,10 @@ This project uses Scott Kirvan's GitHub template structure:
 - [x] Preserve all currently open vaults when opening new ones
 - [x] Restore workspace state (open notes, tabs, sidebar layout)
 - [x] Windows Explorer context menu integration (right-click on folder AND in folder background)
-- [x] Installer and uninstaller scripts
+- [x] Manual installer and uninstaller PowerShell scripts
 - [x] Auto-detect Obsidian installation path from registry
 - [x] Use Obsidian's icon in context menu
+- [x] WiX-based MSI installer for automated installation/uninstallation
 
 ### Phase 2: Template System (TODO)
 - [ ] Add template vault support
@@ -60,9 +69,19 @@ This project uses Scott Kirvan's GitHub template structure:
 ## Technical Architecture
 
 ### Key Files
+
+**Source Scripts:**
 - `src/scripts/register-vault-final.ps1` - Main vault registration script
 - `src/scripts/install-context-menu.ps1` - Windows registry installer (requires Admin)
 - `src/scripts/uninstall-context-menu.ps1` - Removes context menu (requires Admin)
+
+**Build System:**
+- `Build-Installer.ps1` - Main build script for creating MSI installer
+- `tools/packaging/packaging.psm1` - PowerShell module for WiX build automation
+- `tools/packaging/wix/Product.wxs` - WiX source file defining installer structure
+- `notes/BUILD.md` - Build system documentation
+
+**Testing:**
 - `tests/` - Test scripts for development
 
 ### How It Works
@@ -127,14 +146,16 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 
 ## Future Features (Wishlist)
 - Add custom icon option
-- Package as executable for easier distribution
+- ~~Package as executable for easier distribution~~ ✅ Done (MSI installer)
 - Template vault system with pre-configured settings
 - Support for different Obsidian installation methods (portable, etc.)
 - Option to open vault without closing other vaults (if possible)
+- Code signing for MSI installer (requires certificate)
+- Chocolatey package for easy installation
 
 ## Development Status
-**Current State**: Phase 1 complete and functional. Context menu integration working with icon support.
-**Next Steps**: Test thoroughly, prepare for open source release, consider Phase 2 template system.
+**Current State**: Phase 1 complete and functional. Context menu integration working with icon support. WiX-based MSI installer build system implemented.
+**Next Steps**: Test installer thoroughly, set up GitHub Actions for automated builds, prepare for open source release, consider Phase 2 template system.
 
 ## Important Notes for Claude Code
 - Always read files before editing them
@@ -142,3 +163,5 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 - Test changes don't break the context menu functionality
 - Keep the README.md in sync with actual functionality
 - Preserve the user's custom Obsidian installation path detection
+- Follow Microsoft PowerShell's build patterns for WiX installer modifications
+- Build artifacts (dist/, staging/) are gitignored - never commit them
