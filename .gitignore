@@ -1,3 +1,15 @@
 *.code-workspace
 .obsidian/*
-.claude/
+
+# Claude Code - Personal/Local files (do not commit)
+.claude/settings.local.json
+.claude/*.local.*
+CLAUDE.local.md
+
+# Claude Code - Team/Project files (these are committed)
+# .claude/settings.json
+# .claude/CLAUDE.md
+# .claude/rules/
+# .claude/agents/
+# .claude/hooks/
+# CLAUDE.md
