@@ -33,9 +33,10 @@ For complete installation and usage instructions, see **[User Documentation](not
 
 ```
 ObsidianQuickLaunch/
-├── Build-Installer.ps1   # MSI installer build script
 ├── src/scripts/          # Production PowerShell scripts
-├── tools/packaging/      # WiX build system and packaging module
+├── tools/
+│   ├── build/            # Build scripts (build.bat, Build-Installer.ps1)
+│   └── packaging/        # WiX build system and packaging module
 ├── tests/                # Development test scripts
 ├── notes/                # User documentation and project notes
 ├── .github/              # GitHub workflows and templates
@@ -69,8 +70,8 @@ This project uses:
 See [notes/BUILD.md](notes/BUILD.md) for detailed build instructions.
 
 **Quick Build:**
-```powershell
-.\Build-Installer.ps1 rebuild
+```cmd
+.\tools\build\build.bat rebuild
 ```
 
 ### Contributing

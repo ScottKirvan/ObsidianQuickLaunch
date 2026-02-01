@@ -6,12 +6,12 @@ REM This batch file runs Build-Installer.ps1 with proper PowerShell execution
 REM policy settings to avoid permission issues.
 REM
 REM Usage:
-REM   build.cmd                    - Rebuild (clean + build, default)
-REM   build.cmd rebuild            - Same as above
-REM   build.cmd build              - Build only (fails if MSI exists)
-REM   build.cmd clean              - Remove build artifacts only
-REM   build.cmd rebuild 1.2.3      - Rebuild with specific version
-REM   build.cmd build 1.2.3        - Build with specific version
+REM   build.bat                    - Rebuild (clean + build, default)
+REM   build.bat rebuild            - Same as above
+REM   build.bat build              - Build only (fails if MSI exists)
+REM   build.bat clean              - Remove build artifacts only
+REM   build.bat rebuild 1.2.3      - Rebuild with specific version
+REM   build.bat build 1.2.3        - Build with specific version
 REM ============================================================================
 
 setlocal EnableDelayedExpansion

@@ -60,6 +60,7 @@
 - [x] Create MSI installer package (WiX 3.x)
 
 ### TODO
+- [ ] Update license agreement in installer (currently placeholder text)
 - [ ] Code signing certificate for MSI
 - [ ] GitHub Actions workflow for automated builds
 - [ ] Chocolatey package

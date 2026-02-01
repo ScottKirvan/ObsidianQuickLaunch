@@ -27,8 +27,10 @@ The build system follows the Microsoft PowerShell project's pattern of using Pow
 
 ```
 ObsidianQuickLaunch/
-├── Build-Installer.ps1          # Main build script
 ├── tools/
+│   ├── build/
+│   │   ├── build.bat            # Build wrapper (handles PowerShell permissions)
+│   │   └── Build-Installer.ps1  # Main build script
 │   └── packaging/
 │       ├── packaging.psd1       # PowerShell module manifest
 │       ├── packaging.psm1       # Packaging functions
@@ -47,22 +49,24 @@ ObsidianQuickLaunch/
 
 ### Quick Start
 
-```powershell
+```cmd
 # Rebuild (clean + build) - Most common, recommended
-.\Build-Installer.ps1 rebuild
+.\tools\build\build.bat rebuild
 
 # Build only (fails if MSI already exists)
-.\Build-Installer.ps1 build
+.\tools\build\build.bat build
 
 # Clean only (remove artifacts without building)
-.\Build-Installer.ps1 clean
+.\tools\build\build.bat clean
 
 # Rebuild with specific version
-.\Build-Installer.ps1 rebuild -Version "1.2.3"
+.\tools\build\build.bat rebuild 1.2.3
 
 # Default action is rebuild if no action specified
-.\Build-Installer.ps1
+.\tools\build\build.bat
 ```
+
+Note: `build.bat` wraps `Build-Installer.ps1` with proper PowerShell execution policy settings to avoid permission issues.
 
 ### Build Actions
 
@@ -72,7 +76,7 @@ ObsidianQuickLaunch/
 
 ### Build Process
 
-The `Build-Installer.ps1` script performs these steps:
+The `tools/build/Build-Installer.ps1` script performs these steps:
 
 1. **Version Detection**
    - Reads version from `.github/release-please/.release-please-manifest.json`
@@ -228,7 +232,7 @@ Uninstallation removes:
 ### Customizing the Build
 
 #### Modify Files to Package
-Edit `Build-Installer.ps1` around line 100:
+Edit `tools/build/Build-Installer.ps1` around line 120:
 
 ```powershell
 $sourceScripts = @(
@@ -267,8 +271,8 @@ The build system is designed for GitHub Actions integration:
 
 ```yaml
 - name: Build Installer
-  run: .\Build-Installer.ps1
-  shell: powershell
+  run: .\tools\build\build.bat rebuild
+  shell: cmd
 
 - name: Upload MSI
   uses: actions/upload-artifact@v3

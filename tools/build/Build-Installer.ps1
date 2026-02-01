@@ -52,8 +52,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# Get repository root
-$RepoRoot = $PSScriptRoot
+# Get repository root (script is in tools/build/, so go up two levels)
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $PackagingRoot = Join-Path $RepoRoot "tools\packaging"
 $DistPath = Join-Path $RepoRoot "dist"
 $StagingPath = Join-Path $PackagingRoot "staging"

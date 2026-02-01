@@ -28,7 +28,7 @@ This project uses Scott Kirvan's GitHub template structure:
 ### Build & Packaging
 - **Build System**: WiX Toolset 3.x-based MSI installer
 - **Build Pattern**: Follows Microsoft PowerShell project's approach (PowerShell scripts generate WiX installers)
-- **Build Script**: `Build-Installer.ps1` orchestrates the build process
+- **Build Script**: `tools/build/build.bat` (wrapper) and `tools/build/Build-Installer.ps1` orchestrate the build process
 - **Packaging Module**: `tools/packaging/packaging.psm1` contains WiX build functions
 - **Output**: MSI installer in `dist/ObsidianQuickLaunch-{version}.msi`
 
@@ -76,7 +76,8 @@ This project uses Scott Kirvan's GitHub template structure:
 - `src/scripts/uninstall-context-menu.ps1` - Removes context menu (requires Admin)
 
 **Build System:**
-- `Build-Installer.ps1` - Main build script for creating MSI installer
+- `tools/build/build.bat` - Build wrapper (handles PowerShell execution policy)
+- `tools/build/Build-Installer.ps1` - Main build script for creating MSI installer
 - `tools/packaging/packaging.psm1` - PowerShell module for WiX build automation
 - `tools/packaging/wix/Product.wxs` - WiX source file defining installer structure
 - `notes/BUILD.md` - Build system documentation
