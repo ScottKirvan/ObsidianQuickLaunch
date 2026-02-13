@@ -3,8 +3,113 @@
 This document captures key technical decisions, challenges solved, and the rationale behind implementation choices during development.
 
 ## Table of Contents
+- [Session: Phase 2 Design - Templates & File Association (Feb 13, 2026)](#session-phase-2-design---templates--file-association-feb-13-2026)
 - [Session: WiX Installer Build System (Dec 30, 2024)](#session-wix-installer-build-system-dec-30-2024)
 - [Session: Initial Development (Dec 12-16, 2024)](#session-initial-development-dec-12-16-2024)
+
+---
+
+## Session: Phase 2 Design - Templates & File Association (Feb 13, 2026)
+
+### Goal
+Design the template system for vault creation and add .md file association support.
+
+### Decision: Templates as Plain Folders
+
+**Approach:** Templates are simply complete vault directory structures (`.obsidian/` folder plus any starter files/folders). No custom config format, no metadata files — just a folder that gets copied.
+
+**Rationale:**
+- Zero learning curve — users already know how to set up an Obsidian vault
+- Creating a template = setting up a vault the way you want it, then copying the folder
+- No maintenance burden from a custom schema
+- Easy to share templates (just zip a folder)
+
+### Template Storage
+
+**Location:** `%APPDATA%\ObsidianQuickLaunch\templates\`
+
+Each subfolder is a template, named by its folder name:
+```
+%APPDATA%\ObsidianQuickLaunch\templates\
+├── default\              # Always applied when no selection made
+│   └── .obsidian\
+│       └── ...
+├── Zettelkasten\
+│   ├── .obsidian\
+│   ├── Daily Notes\
+│   └── Templates\
+└── Project Docs\
+    ├── .obsidian\
+    ├── docs\
+    └── README.md
+```
+
+**Bundled templates** ship with the MSI installer as examples. Users can add, modify, or remove templates freely.
+
+### Template Application Rules
+
+1. **Applied at vault creation only** — never retroactively to existing vaults
+2. **Non-destructive copy** — file-level check; never overwrite existing files. A template can add files into an existing `.obsidian/` folder without clobbering existing settings
+3. **Default template** is always applied silently on every "Open as Obsidian Vault" action
+4. **Vault opening order** is unchanged — previously open vaults first, new vault last
+
+### Template Selection UX
+
+**Normal right-click:** "Open as Obsidian Vault" — applies the default template silently.
+
+**Shift+right-click:** "Open as Obsidian Vault (choose template)..." — shows a template chooser dialog (only if more than one template exists; otherwise behaves like normal).
+
+**Implementation:** Use Windows `Extended` registry entry for the shift variant. This is the native Windows mechanism for shift+right-click menu items — completely reliable, no race conditions.
+
+```
+HKCR\Directory\shell\ObsidianQuickLaunch
+├── (Default) = "Open as Obsidian Vault"
+└── command\...
+
+HKCR\Directory\shell\ObsidianQuickLaunchTemplate
+├── (Default) = "Open as Obsidian Vault (choose template)..."
+├── Extended              # Only shows with Shift+right-click
+└── command\...
+```
+
+Same pattern for `Directory\Background\shell\`.
+
+**Template chooser dialog:** Simple Windows Forms dialog with a list of available template names. Minimal — just a listbox and OK/Cancel.
+
+### .md File Association (New Feature)
+
+**Behavior:**
+1. User double-clicks any `.md` file
+2. Handler script determines the file's immediate parent folder
+3. Registers/opens that folder as an Obsidian vault (same logic as context menu)
+4. Obsidian opens with the file's vault visible
+
+**Design decisions:**
+- **Immediate parent folder** is used as the vault root (simple, predictable)
+- **Opt-in during install** — unchecked checkbox by default, since this is a system-visible change that could conflict with VS Code, Typora, or other .md editors
+- Reuses existing vault registration logic from `register-vault-final.ps1`
+
+**Registry:**
+```
+HKCR\.md\OpenWithProgIds\ObsidianQuickLaunch.md
+HKCR\ObsidianQuickLaunch.md\shell\open\command = powershell.exe ... open-md-file.ps1 "%1"
+```
+
+### Key Technical Considerations
+
+1. **Extended context menu entries** are natively supported by Windows — add an `Extended` string value (empty) to the registry key and Windows only shows the entry when Shift is held
+2. **Non-destructive file copy** must be at the file level, not folder level, so templates can add files into existing directories (e.g., adding plugins to an existing `.obsidian/` folder)
+3. **File association** requires a new WiX feature component (opt-in checkbox) and a new script (`open-md-file.ps1`) that wraps the vault registration logic
+
+### Session Summary
+
+**Completed:** Phase 2 design decisions finalized. No code written — design only.
+
+**Key Deliverables:**
+- Template system design (plain folders, non-destructive copy, default + chooser)
+- Template selection UX (normal click = default, Shift+click = chooser dialog)
+- .md file association design (opt-in, immediate parent folder as vault)
+- Updated TODO.md with refined task breakdown
 
 ---
 
@@ -531,11 +636,7 @@ All test scripts in `/tests/` directory:
 
 ### Phase 2: Template System
 
-**Ideas to Explore**:
-- Template vaults with pre-configured plugins, settings, themes
-- Template structure: folder hierarchy, template files
-- Template metadata: description, author, category
-- Template selection UI (PowerShell dialog? Obsidian plugin?)
+**Design finalized** — see [Session: Phase 2 Design (Feb 13, 2026)](#session-phase-2-design---templates--file-association-feb-13-2026) for full details.
 
 ### Testing & CI/CD
 

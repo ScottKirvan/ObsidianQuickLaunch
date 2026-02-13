@@ -61,10 +61,18 @@ This project uses Scott Kirvan's GitHub template structure:
 - [x] Use Obsidian's icon in context menu
 - [x] WiX-based MSI installer for automated installation/uninstallation
 
-### Phase 2: Template System (TODO)
-- [ ] Add template vault support
-- [ ] Allow users to apply pre-configured vault templates
-- [ ] Templates should include: plugins, settings, folder structure, template notes
+### Phase 2: Template System & File Association (TODO)
+- [ ] **Default template**: Plain folder copied non-destructively on vault creation
+  - Templates stored in `%APPDATA%\ObsidianQuickLaunch\templates\`
+  - File-level existence checks — never overwrite existing files
+  - Default template applied silently on every context menu action
+- [ ] **Template chooser**: Shift+right-click shows selection dialog (Windows `Extended` registry entry)
+  - Second context menu entry with `Extended` value (native shift+right-click support)
+  - Simple Windows Forms listbox dialog (only shown if >1 template exists)
+  - Bundled example templates ship with MSI installer
+- [ ] **.md file association** (opt-in): Double-click .md opens parent folder as vault
+  - Opt-in checkbox in MSI installer (unchecked by default)
+  - New `open-md-file.ps1` script wrapping vault registration logic
 
 ## Technical Architecture
 
@@ -95,6 +103,8 @@ This project uses Scott Kirvan's GitHub template structure:
 - Obsidian path detected from: `HKEY_CLASSES_ROOT\obsidian\shell\open\command`
 - Context menu entries in: `HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunch`
 - Background menu in: `HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunch`
+- Template chooser (Phase 2): `Extended` entries in `ObsidianQuickLaunchTemplate` (shift+right-click)
+- .md file association (Phase 2, opt-in): `HKEY_CLASSES_ROOT\.md\OpenWithProgIds\ObsidianQuickLaunch.md`
 
 ## Known Issues & Design Decisions
 
@@ -155,8 +165,8 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 - Chocolatey package for easy installation
 
 ## Development Status
-**Current State**: Phase 1 complete and functional. Context menu integration working with icon support. WiX-based MSI installer build system implemented.
-**Next Steps**: Test installer thoroughly, set up GitHub Actions for automated builds, prepare for open source release, consider Phase 2 template system.
+**Current State**: Phase 1 complete and functional. Context menu integration working with icon support. WiX-based MSI installer build system implemented. Phase 2 design finalized.
+**Next Steps**: Implement Phase 2 template system (default template, template chooser, .md file association). See `notes/DEV_NOTES.md` for full design details and `notes/TODO.md` for task breakdown.
 
 ## Important Notes for Claude Code
 - Always read files before editing them

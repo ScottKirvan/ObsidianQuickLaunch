@@ -26,19 +26,39 @@
   - [x] Clean/Build/Rebuild actions
   - [x] Version auto-detection from release-please manifest
 
-## Phase 2: Template System 🚧 PLANNED
+## Phase 2: Template System & File Association 🚧 PLANNED
 
-### TODO
-- [ ] Design template vault structure
-- [ ] Template vault configuration format
-- [ ] Apply template on vault creation
-- [ ] Built-in template examples:
-  - [ ] Basic (minimal setup)
-  - [ ] Zettelkasten
-  - [ ] Personal Knowledge Management (PKM)
-  - [ ] Project Documentation
-- [ ] User-defined template support
-- [ ] Template selection UI/dialog
+Design details in [DEV_NOTES.md](DEV_NOTES.md#session-phase-2-design---templates--file-association-feb-13-2026).
+
+### 2a. Default Template Support
+- [x] Design template system (plain folders, non-destructive copy)
+- [ ] Create template directory structure (`%APPDATA%\ObsidianQuickLaunch\templates\`)
+- [ ] Implement non-destructive file copy logic in `register-vault-final.ps1`
+  - File-level existence checks (never overwrite existing files)
+  - Copy template contents into target vault folder
+- [ ] Create default template (bundled in installer)
+  - Basic `.obsidian/` with sensible defaults
+- [ ] Update MSI installer to deploy default template to templates directory
+- [ ] Test: new vault creation applies default template
+- [ ] Test: existing vault files are never overwritten
+
+### 2b. Template Chooser (Shift+Right-Click)
+- [ ] Add `Extended` context menu registry entries (Shift+right-click variant)
+  - `HKCR\Directory\shell\ObsidianQuickLaunchTemplate` with `Extended` value
+  - `HKCR\Directory\Background\shell\ObsidianQuickLaunchTemplate` with `Extended` value
+- [ ] Create template chooser dialog (Windows Forms listbox, OK/Cancel)
+- [ ] Pass selected template name to `register-vault-final.ps1`
+- [ ] Update MSI installer with new registry entries
+- [ ] Create additional bundled example templates:
+  - [ ] Zettelkasten (Daily Notes, Templates folders)
+  - [ ] Project Documentation (docs folder, starter README)
+
+### 2c. .md File Association (Opt-In)
+- [ ] Create `open-md-file.ps1` script (wraps vault registration for parent folder)
+- [ ] Add opt-in checkbox to MSI installer (unchecked by default)
+- [ ] Register `.md` file association via WiX (`HKCR\.md\OpenWithProgIds`)
+- [ ] Test: double-click .md opens parent folder as vault in Obsidian
+- [ ] Test: does not interfere with other .md editors when not opted in
 
 ## Documentation & Quality
 
@@ -106,5 +126,5 @@
 
 ---
 
-**Last Updated:** 2024-12-30
-**Current Phase:** Phase 1 Complete (including MSI installer), Phase 2 Planning
+**Last Updated:** 2026-02-13
+**Current Phase:** Phase 1 Complete, Phase 2 Design Finalized — Implementation Next
