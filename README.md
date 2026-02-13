@@ -10,6 +10,7 @@
 
 ObsidianQuickLaunch adds Windows Explorer context menu entries that allow you to quickly open any folder as an Obsidian vault. Right-click on a folder or within a folder and select "Open as Obsidian Vault" to instantly register and launch it in Obsidian.
 
+
 **Key Features:**
 - One-click vault creation and opening from Windows Explorer
 - Preserves all currently open vaults and workspaces
