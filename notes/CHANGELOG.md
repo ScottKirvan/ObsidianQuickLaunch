@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.0.1...v0.1.0) (2026-02-13)
+
+
+### Features
+
+* wix installer replaces script-based registry changes ([964e5d1](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/964e5d1d48008b796470e203b948e4d879c42ca8))
+
+
+### Bug Fixes
+
+* test release-please ([4e76bd0](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/4e76bd04c366ee5c0190a16387b82e8b37e609b7))
+* update version number to pre-release 0.0.1 ([7491eb4](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/7491eb470082c8b6f8310555fc6022746e1f5c84))
+
 ## 1.0.0 (2026-02-13)
 
 
