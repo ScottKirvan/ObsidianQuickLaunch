@@ -67,14 +67,16 @@
       <ComponentRef Id="StartMenuShortcuts" />
     </Feature>
 
-    <!-- .md File Association Feature (opt-in, unchecked by default) -->
+    <!-- .md File Association Feature (opt-in, unchecked in Typical install) -->
+    <!-- Level=2 means: excluded from Typical (INSTALLLEVEL=1), included in Complete.
+         Users who want Typical without .md association should NOT use Complete install. -->
     <Feature Id="MdFileAssociation" Title=".md File Association"
-             Description="Add ObsidianQuickLaunch to the 'Open with' list for .md files"
-             Level="2" AllowAdvertise="no">
+             Description="Add ObsidianQuickLaunch to the 'Open with' list for .md files. Use 'Typical' install to exclude this. 'Complete' install includes all features."
+             Level="2" Absent="allow" AllowAdvertise="no">
       <ComponentRef Id="MdFileAssociationRegistration" />
     </Feature>
 
-    <!-- Custom Action: Detect Obsidian path for icon (optional) -->
+    <!-- Detect Obsidian path for context menu icon -->
     <Property Id="OBSIDIANPATH">
       <RegistrySearch
         Id="SearchObsidianPath"
@@ -83,12 +85,45 @@
         Type="raw" />
     </Property>
 
+    <!-- Parse Obsidian exe path from raw command string for Icon registry values -->
+    <Property Id="OBSIDIANICON" Secure="yes" />
+    <CustomAction Id="ParseObsidianIcon" Script="vbscript"><![CDATA[
+      Dim rawPath, exePath, pos
+      rawPath = Session.Property("OBSIDIANPATH")
+      If rawPath <> "" Then
+        If Left(rawPath, 1) = Chr(34) Then
+          pos = InStr(2, rawPath, Chr(34))
+          If pos > 2 Then
+            exePath = Mid(rawPath, 2, pos - 2)
+          End If
+        Else
+          pos = InStr(rawPath, " ")
+          If pos > 0 Then
+            exePath = Left(rawPath, pos - 1)
+          Else
+            exePath = rawPath
+          End If
+        End If
+        If exePath <> "" Then
+          Session.Property("OBSIDIANICON") = exePath & ",0"
+        End If
+      End If
+    ]]></CustomAction>
+
+    <InstallExecuteSequence>
+      <Custom Action="ParseObsidianIcon" After="AppSearch">OBSIDIANPATH</Custom>
+    </InstallExecuteSequence>
+    <InstallUISequence>
+      <Custom Action="ParseObsidianIcon" After="AppSearch">OBSIDIANPATH</Custom>
+    </InstallUISequence>
+
     <!-- Windows Explorer Context Menu Registration -->
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ContextMenuRegistration" Guid="B8E9F0A1-2C3D-4E5F-9A8B-7C6D5E4F3A2B" Win64="yes">
         <!-- Context Menu: Right-click ON a folder -->
         <RegistryKey Root="HKCR" Key="Directory\shell\ObsidianQuickLaunch">
-          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault" />
+          <RegistryValue Type="string" Name="(Default)" Value="QuickLaunch Obsidian here" />
+          <RegistryValue Type="string" Name="Icon" Value="[OBSIDIANICON]" />
 
           <RegistryKey Key="command">
             <RegistryValue
@@ -99,7 +134,8 @@
 
         <!-- Context Menu: Right-click IN a folder (background) -->
         <RegistryKey Root="HKCR" Key="Directory\Background\shell\ObsidianQuickLaunch">
-          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault" />
+          <RegistryValue Type="string" Name="(Default)" Value="QuickLaunch Obsidian here" />
+          <RegistryValue Type="string" Name="Icon" Value="[OBSIDIANICON]" />
 
           <RegistryKey Key="command">
             <RegistryValue
@@ -108,10 +144,10 @@
           </RegistryKey>
         </RegistryKey>
 
-        <!-- Template Chooser: Shift+Right-click ON a folder -->
+        <!-- Template Chooser: Right-click ON a folder (always visible) -->
         <RegistryKey Root="HKCR" Key="Directory\shell\ObsidianQuickLaunchTemplate">
-          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault (choose template)..." />
-          <RegistryValue Type="string" Name="Extended" Value="" />
+          <RegistryValue Type="string" Name="(Default)" Value="QuickLaunch Obsidian here (choose template)..." />
+          <RegistryValue Type="string" Name="Icon" Value="[OBSIDIANICON]" />
 
           <RegistryKey Key="command">
             <RegistryValue
@@ -120,10 +156,10 @@
           </RegistryKey>
         </RegistryKey>
 
-        <!-- Template Chooser: Shift+Right-click IN a folder (background) -->
+        <!-- Template Chooser: Right-click IN a folder (always visible) -->
         <RegistryKey Root="HKCR" Key="Directory\Background\shell\ObsidianQuickLaunchTemplate">
-          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault (choose template)..." />
-          <RegistryValue Type="string" Name="Extended" Value="" />
+          <RegistryValue Type="string" Name="(Default)" Value="QuickLaunch Obsidian here (choose template)..." />
+          <RegistryValue Type="string" Name="Icon" Value="[OBSIDIANICON]" />
 
           <RegistryKey Key="command">
             <RegistryValue

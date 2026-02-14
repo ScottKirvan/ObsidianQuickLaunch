@@ -46,7 +46,7 @@ try {
     if (-not (Test-Path $regPathDirectory)) {
         New-Item -Path $regPathDirectory -Force | Out-Null
     }
-    Set-ItemProperty -Path $regPathDirectory -Name "(Default)" -Value "Open as Obsidian Vault"
+    Set-ItemProperty -Path $regPathDirectory -Name "(Default)" -Value "QuickLaunch Obsidian here"
 
     # Try to find Obsidian executable from registry
     $obsidianExePath = $null
@@ -101,7 +101,7 @@ try {
     if (-not (Test-Path $regPathBackground)) {
         New-Item -Path $regPathBackground -Force | Out-Null
     }
-    Set-ItemProperty -Path $regPathBackground -Name "(Default)" -Value "Open as Obsidian Vault"
+    Set-ItemProperty -Path $regPathBackground -Name "(Default)" -Value "QuickLaunch Obsidian here"
 
     # Set the same icon for background menu
     if ($obsidianExePath -and (Test-Path $obsidianExePath)) {
@@ -117,10 +117,10 @@ try {
 
     Write-Host "  Created menu for backgrounds (right-click IN folder)" -ForegroundColor Green
 
-    # ===== Option 3: Shift+Right-click ON a folder (template chooser) =====
+    # ===== Option 3: Template chooser ON a folder =====
     $chooserPath = Join-Path $scriptDir "choose-template.ps1"
     if (Test-Path $chooserPath) {
-        Write-Host "  Adding template chooser for folders (Shift+right-click)..." -ForegroundColor Gray
+        Write-Host "  Adding template chooser for folders..." -ForegroundColor Gray
 
         $regPathDirectoryTemplate = "Registry::HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunchTemplate"
         $regCommandPathDirectoryTemplate = "$regPathDirectoryTemplate\command"
@@ -128,8 +128,7 @@ try {
         if (-not (Test-Path $regPathDirectoryTemplate)) {
             New-Item -Path $regPathDirectoryTemplate -Force | Out-Null
         }
-        Set-ItemProperty -Path $regPathDirectoryTemplate -Name "(Default)" -Value "Open as Obsidian Vault (choose template)..."
-        New-ItemProperty -Path $regPathDirectoryTemplate -Name "Extended" -PropertyType String -Value "" -Force | Out-Null
+        Set-ItemProperty -Path $regPathDirectoryTemplate -Name "(Default)" -Value "QuickLaunch Obsidian here (choose template)..."
 
         if ($obsidianExePath -and (Test-Path $obsidianExePath)) {
             Set-ItemProperty -Path $regPathDirectoryTemplate -Name "Icon" -Value "$obsidianExePath,0"
@@ -141,10 +140,10 @@ try {
         $commandDirectoryTemplate = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$chooserPath`" `"%V`""
         Set-ItemProperty -Path $regCommandPathDirectoryTemplate -Name "(Default)" -Value $commandDirectoryTemplate
 
-        Write-Host "  Created template chooser for folders (Shift+right-click ON folder)" -ForegroundColor Green
+        Write-Host "  Created template chooser for folders (right-click ON folder)" -ForegroundColor Green
 
-        # ===== Option 4: Shift+Right-click IN a folder (template chooser, background) =====
-        Write-Host "  Adding template chooser for backgrounds (Shift+right-click)..." -ForegroundColor Gray
+        # ===== Option 4: Template chooser IN a folder (background) =====
+        Write-Host "  Adding template chooser for backgrounds..." -ForegroundColor Gray
 
         $regPathBackgroundTemplate = "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunchTemplate"
         $regCommandPathBackgroundTemplate = "$regPathBackgroundTemplate\command"
@@ -152,8 +151,7 @@ try {
         if (-not (Test-Path $regPathBackgroundTemplate)) {
             New-Item -Path $regPathBackgroundTemplate -Force | Out-Null
         }
-        Set-ItemProperty -Path $regPathBackgroundTemplate -Name "(Default)" -Value "Open as Obsidian Vault (choose template)..."
-        New-ItemProperty -Path $regPathBackgroundTemplate -Name "Extended" -PropertyType String -Value "" -Force | Out-Null
+        Set-ItemProperty -Path $regPathBackgroundTemplate -Name "(Default)" -Value "QuickLaunch Obsidian here (choose template)..."
 
         if ($obsidianExePath -and (Test-Path $obsidianExePath)) {
             Set-ItemProperty -Path $regPathBackgroundTemplate -Name "Icon" -Value "$obsidianExePath,0"
@@ -165,7 +163,7 @@ try {
         $commandBackgroundTemplate = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$chooserPath`" `"%V`""
         Set-ItemProperty -Path $regCommandPathBackgroundTemplate -Name "(Default)" -Value $commandBackgroundTemplate
 
-        Write-Host "  Created template chooser for backgrounds (Shift+right-click IN folder)" -ForegroundColor Green
+        Write-Host "  Created template chooser for backgrounds (right-click IN folder)" -ForegroundColor Green
     } else {
         Write-Host "  Note: choose-template.ps1 not found, skipping template chooser menu" -ForegroundColor Yellow
     }
@@ -176,8 +174,8 @@ try {
     Write-Host "The context menu has been installed." -ForegroundColor White
     Write-Host ""
     Write-Host "Usage:" -ForegroundColor Yellow
-    Write-Host "  Right-click ON or IN any folder -> 'Open as Obsidian Vault'" -ForegroundColor Gray
-    Write-Host "  Shift+Right-click -> 'Open as Obsidian Vault (choose template)...'" -ForegroundColor Gray
+    Write-Host "  Right-click ON or IN any folder -> 'QuickLaunch Obsidian here'" -ForegroundColor Gray
+    Write-Host "  Right-click -> 'QuickLaunch Obsidian here (choose template)...' to select a template" -ForegroundColor Gray
     Write-Host ""
     Write-Host "The folder will be registered and opened in Obsidian" -ForegroundColor White
     Write-Host ""

@@ -98,6 +98,9 @@ function Copy-TemplateNonDestructive {
 
     if (-not (Test-Path $TemplatePath)) { return $false }
 
+    # Normalize path to remove trailing separators for reliable substring calculation
+    $TemplatePath = $TemplatePath.TrimEnd('\', '/')
+
     $copiedCount = 0
     $skippedCount = 0
     $templateFiles = Get-ChildItem -Path $TemplatePath -Recurse -File -Force
