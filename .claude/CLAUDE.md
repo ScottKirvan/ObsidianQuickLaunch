@@ -1,7 +1,7 @@
 # ObsidianQuickLaunch - Claude Code Project Rules
 
 ## Project Overview
-ObsidianQuickLaunch is a Windows utility that adds Windows Explorer context menu integration for quickly opening folders as Obsidian vaults. Right-click any folder (or within a folder) to register and open it as an Obsidian vault.
+ObsidianQuickLaunch is a Windows utility that adds Windows Explorer context menu integration for quickly opening folders as Obsidian vaults. Right-click any folder (or within a folder) to register and open it as an Obsidian vault, with optional template application and .md file association.
 
 ## Repository Structure & Documentation Guidelines
 
@@ -61,27 +61,34 @@ This project uses Scott Kirvan's GitHub template structure:
 - [x] Use Obsidian's icon in context menu
 - [x] WiX-based MSI installer for automated installation/uninstallation
 
-### Phase 2: Template System & File Association (TODO)
-- [ ] **Default template**: Plain folder copied non-destructively on vault creation
-  - Templates stored in `%APPDATA%\ObsidianQuickLaunch\templates\`
+### Phase 2: Template System & File Association (COMPLETE ✅)
+- [x] **Default template**: Plain folder copied non-destructively on vault creation
+  - Templates stored in `%APPDATA%\ObsidianQuickLaunch\templates\` (user) and bundled with installer
   - File-level existence checks — never overwrite existing files
   - Default template applied silently on every context menu action
-- [ ] **Template chooser**: Shift+right-click shows selection dialog (Windows `Extended` registry entry)
-  - Second context menu entry with `Extended` value (native shift+right-click support)
+- [x] **Template chooser**: Always-visible second context menu entry with dialog
+  - "QuickLaunch Obsidian here (choose template)..." entry (always visible, no Shift required)
   - Simple Windows Forms listbox dialog (only shown if >1 template exists)
-  - Bundled example templates ship with MSI installer
-- [ ] **.md file association** (opt-in): Double-click .md opens parent folder as vault
-  - Opt-in checkbox in MSI installer (unchecked by default)
-  - New `open-md-file.ps1` script wrapping vault registration logic
+  - 3 bundled example templates (default, zettelkasten, project-docs)
+- [x] **.md file association** (opt-in): Double-click .md opens parent folder as vault
+  - Opt-in feature in MSI installer (Level=2, excluded from Typical, included in Complete)
+  - `open-md-file.ps1` script wrapping vault registration logic
 
 ## Technical Architecture
 
 ### Key Files
 
 **Source Scripts:**
-- `src/scripts/register-vault-final.ps1` - Main vault registration script
+- `src/scripts/register-vault-final.ps1` - Main vault registration + template application
+- `src/scripts/choose-template.ps1` - Template chooser dialog (Windows Forms)
+- `src/scripts/open-md-file.ps1` - .md file handler (opens parent folder as vault)
 - `src/scripts/install-context-menu.ps1` - Windows registry installer (requires Admin)
 - `src/scripts/uninstall-context-menu.ps1` - Removes context menu (requires Admin)
+
+**Templates:**
+- `src/templates/default/` - Minimal default template (`.obsidian/app.json`)
+- `src/templates/zettelkasten/` - Zettelkasten template (Daily Notes, Templates folders)
+- `src/templates/project-docs/` - Project docs template (docs folder, starter README)
 
 **Build System:**
 - `tools/build/build.bat` - Build wrapper (handles PowerShell execution policy)
@@ -91,20 +98,33 @@ This project uses Scott Kirvan's GitHub template structure:
 - `notes/BUILD.md` - Build system documentation
 
 **Testing:**
-- `tests/` - Test scripts for development
+- `tests/test-template-application.ps1` - Template copy logic tests (13 tests)
+- `tests/test-template-chooser.ps1` - Template chooser dialog tests (9 tests)
+- `tests/test-md-file-open.ps1` - .md file handler tests (7 tests)
+- `tests/` - Additional test scripts for development
 
 ### How It Works
 1. **Vault Registration**: Obsidian tracks vaults in `%APPDATA%\obsidian\obsidian.json`
-2. **Workspace State**: Each vault stores its state in `.obsidian\workspace.json`
-3. **Opening Vaults**: Uses `obsidian://open?path=...` URI protocol
-4. **Critical Limitation**: Obsidian must be closed before modifying `obsidian.json`, or changes will be overwritten
+2. **Template Application**: Template files copied non-destructively (file-level check, never overwrite)
+3. **Template Resolution**: User templates (`%APPDATA%\ObsidianQuickLaunch\templates\`) override bundled templates
+4. **Workspace State**: Each vault stores its state in `.obsidian\workspace.json`
+5. **Opening Vaults**: Uses `obsidian://open?path=...` URI protocol
+6. **Critical Limitation**: Obsidian must be closed before modifying `obsidian.json`, or changes will be overwritten
 
 ### Registry Integration
 - Obsidian path detected from: `HKEY_CLASSES_ROOT\obsidian\shell\open\command`
 - Context menu entries in: `HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunch`
 - Background menu in: `HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunch`
-- Template chooser (Phase 2): `Extended` entries in `ObsidianQuickLaunchTemplate` (shift+right-click)
-- .md file association (Phase 2, opt-in): `HKEY_CLASSES_ROOT\.md\OpenWithProgIds\ObsidianQuickLaunch.md`
+- Template chooser: `HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunchTemplate` (always visible)
+- Template chooser background: `HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunchTemplate`
+- .md file association (opt-in): `HKEY_CLASSES_ROOT\.md\OpenWithProgIds\ObsidianQuickLaunch.md`
+- MSI icon detection: VBScript custom action parses OBSIDIANPATH → OBSIDIANICON property
+
+### WiX Installer Features
+- **MainFeature** (Level=1): Core scripts, context menus, templates, start menu shortcuts
+- **MdFileAssociation** (Level=2): .md file association (opt-in in Typical, included in Complete)
+- **UI**: WixUI_Mondo (Typical/Custom/Complete with feature selection and directory browsing)
+- **ConfigurableDirectory**: INSTALLFOLDER on MainFeature enables Browse in Custom dialog
 
 ## Known Issues & Design Decisions
 
@@ -124,6 +144,17 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 - Previously open vaults open first
 - New vault opens LAST (appears on top/in focus)
 
+### Windows 11 Context Menu
+- Windows 11's modern context menu does NOT support `Extended` registry entries
+- Template chooser entries are always visible (not hidden behind Shift+right-click)
+- Both entries have distinct labels for discoverability
+
+### .md File Association with WixUI_Mondo
+- Level=2 means: excluded from Typical install, included in Complete install
+- "Complete" = install everything (standard WiX behavior)
+- "Reset" in Custom dialog resets to install type defaults
+- Users wanting Typical without .md should NOT use Complete install
+
 ## Development Guidelines
 
 ### PowerShell Style
@@ -142,6 +173,7 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 - Test scripts are in `tests/` folder
 - Keep production scripts separate in `src/scripts/`
 - Always test with Obsidian both running and not running
+- 29 automated tests across 3 test files
 
 ## User's Environment
 - Windows 10/11
@@ -158,15 +190,16 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 ## Future Features (Wishlist)
 - Add custom icon option
 - ~~Package as executable for easier distribution~~ ✅ Done (MSI installer)
-- Template vault system with pre-configured settings
+- ~~Template vault system with pre-configured settings~~ ✅ Done (Phase 2)
 - Support for different Obsidian installation methods (portable, etc.)
 - Option to open vault without closing other vaults (if possible)
 - Code signing for MSI installer (requires certificate)
 - Chocolatey package for easy installation
+- Update license agreement in installer (currently placeholder text)
 
 ## Development Status
-**Current State**: Phase 1 complete and functional. Context menu integration working with icon support. WiX-based MSI installer build system implemented. Phase 2 design finalized.
-**Next Steps**: Implement Phase 2 template system (default template, template chooser, .md file association). See `notes/DEV_NOTES.md` for full design details and `notes/TODO.md` for task breakdown.
+**Current State**: Phase 1 and Phase 2 complete. Context menu integration working with icon support, template system, template chooser, and .md file association. WiX-based MSI installer with feature selection (WixUI_Mondo). All 29 automated tests passing.
+**Next Steps**: User testing of the fresh MSI build. Then: documentation polish, CI/CD pipeline, distribution packaging (Chocolatey, WinGet, Scoop). See `notes/DEV_NOTES.md` for full technical details and `notes/TODO.md` for task breakdown.
 
 ## Important Notes for Claude Code
 - Always read files before editing them
@@ -176,3 +209,5 @@ The "homepage" Obsidian plugin can interfere with workspace restoration if confi
 - Preserve the user's custom Obsidian installation path detection
 - Follow Microsoft PowerShell's build patterns for WiX installer modifications
 - Build artifacts (dist/, staging/) are gitignored - never commit them
+- When running PowerShell from bash, `$` variables get eaten by bash - use script files or careful escaping
+- Windows 11 does not support `Extended` registry entries in its modern context menu

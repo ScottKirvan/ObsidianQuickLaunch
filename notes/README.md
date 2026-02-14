@@ -8,6 +8,9 @@ Windows context menu integration for quickly opening folders as Obsidian vaults.
 - Automatically registers new vaults with Obsidian
 - Preserves all currently open vaults and workspaces when opening new vaults
 - Restores previous workspace state (open notes, tabs, sidebar layout)
+- **Template system** — automatically apply vault templates on creation (non-destructive)
+- **Template chooser** — pick from available templates via context menu
+- **.md file association** (opt-in) — double-click `.md` files to open in Obsidian
 
 ## Current Status
 
@@ -20,10 +23,10 @@ Windows context menu integration for quickly opening folders as Obsidian vaults.
 - ✅ Obsidian icon in context menu
 - ✅ Auto-detect Obsidian installation
 
-**Phase 2: 🚧 PLANNED**
-- Template vault system
-- Packaging and distribution
-- CI/CD and testing
+**Phase 2: ✅ COMPLETE**
+- ✅ Template vault system (default + chooser)
+- ✅ .md file association (opt-in)
+- ✅ MSI installer with feature selection
 
 ## Usage
 
@@ -36,21 +39,75 @@ Windows context menu integration for quickly opening folders as Obsidian vaults.
 This will:
 1. Close Obsidian (required to safely modify config)
 2. Register the folder as an Obsidian vault
-3. Reopen all previously open vaults
-4. Open the new vault
+3. Apply the default template (non-destructive — won't overwrite existing files)
+4. Reopen all previously open vaults
+5. Open the new vault
+
+To use a specific template:
+```powershell
+.\src\scripts\register-vault-final.ps1 "C:\path\to\folder" -TemplateName "zettelkasten"
+```
 
 ### Context Menu (Installed)
 
 After running the installer:
-1. Right-click ON any folder, OR
-2. Right-click IN a folder (empty space)
-3. Click "Open as Obsidian Vault"
 
-See Installation section below for setup instructions.
+**"QuickLaunch Obsidian here"**
+1. Right-click ON any folder, or right-click IN a folder (empty space)
+2. Click "QuickLaunch Obsidian here"
+3. The folder is registered as a vault and opened in Obsidian with the default template applied
+
+**"QuickLaunch Obsidian here (choose template)..."**
+1. Right-click ON any folder, or right-click IN a folder
+2. Click "QuickLaunch Obsidian here (choose template)..."
+3. If multiple templates exist, a chooser dialog appears
+4. Select a template and click OK
+
+### .md File Association (Opt-In)
+
+If enabled during installation:
+1. Double-click any `.md` file
+2. The file's parent folder is registered and opened as an Obsidian vault
+
+This adds ObsidianQuickLaunch to the "Open with" list for `.md` files — it does not replace your default `.md` editor.
+
+## Templates
+
+### How Templates Work
+
+Templates are plain folder structures that get copied into new vaults. They can contain:
+- `.obsidian/` folder with app settings, plugin configs, themes
+- Any starter files or folder structure you want
+
+Templates are applied **non-destructively** — they never overwrite existing files. If a vault already has a `.obsidian/app.json`, the template's version is skipped.
+
+### Template Locations
+
+**Bundled templates** ship with the installer:
+- `default` — Minimal `.obsidian/` folder
+- `zettelkasten` — Daily Notes and Templates folders
+- `project-docs` — docs folder with starter README
+
+**User templates** live in `%APPDATA%\ObsidianQuickLaunch\templates\`. Create a new folder there with your desired vault structure to add a custom template. User templates override bundled templates of the same name.
+
+### Creating Custom Templates
+
+1. Set up an Obsidian vault the way you want it (plugins, themes, folders, starter files)
+2. Copy the vault folder to `%APPDATA%\ObsidianQuickLaunch\templates\YourTemplateName\`
+3. The template will appear in the template chooser dialog
 
 ## Installation
 
-### Context Menu Installation
+### MSI Installer (Recommended)
+
+1. Download `ObsidianQuickLaunch-{version}.msi`
+2. Run the installer (requires Administrator)
+3. Choose **Typical** for standard install, or **Custom** to enable .md file association
+4. Done! Context menu entries are available immediately
+
+**Note:** "Complete" install includes all features including .md file association. Use "Typical" if you don't want .md association.
+
+### Manual Installation
 
 1. **Open PowerShell as Administrator**
    - Right-click Start menu → "Terminal (Admin)" or "PowerShell (Admin)"
@@ -69,11 +126,13 @@ See Installation section below for setup instructions.
 
 ### Uninstallation
 
-To remove the context menu:
+**MSI:** Use Add/Remove Programs or run `msiexec /x {ProductCode}`
+
+**Manual:**
 ```powershell
 .\uninstall-context-menu.ps1
 ```
-(Also run as Administrator)
+(Run as Administrator)
 
 ## Known Issues
 
@@ -99,9 +158,10 @@ If you use the "homepage" Obsidian plugin, it may interfere with workspace resto
 ## How It Works
 
 1. **Vault Registration**: Obsidian tracks vaults in `%APPDATA%\obsidian\obsidian.json`
-2. **Workspace State**: Each vault stores its state in `.obsidian\workspace.json`
-3. **Opening Vaults**: Uses the `obsidian://open?path=...` URI protocol
-4. **Critical Limitation**: Obsidian must be closed before modifying `obsidian.json`, or changes will be overwritten
+2. **Template Application**: Template files are copied non-destructively into the vault folder
+3. **Workspace State**: Each vault stores its state in `.obsidian\workspace.json`
+4. **Opening Vaults**: Uses the `obsidian://open?path=...` URI protocol
+5. **Critical Limitation**: Obsidian must be closed before modifying `obsidian.json`, or changes will be overwritten
 
 ## Technical Details
 
@@ -109,6 +169,7 @@ If you use the "homepage" Obsidian plugin, it may interfere with workspace resto
 - Config modifications while Obsidian is running will be lost when Obsidian closes
 - The script must close Obsidian, modify config, then reopen
 - Each vault's workspace is automatically restored by Obsidian
+- Templates are resolved in order: user templates → bundled templates
 
 ## Requirements
 
@@ -121,15 +182,20 @@ If you use the "homepage" Obsidian plugin, it may interfere with workspace resto
 ```
 ObsidianQuickLaunch/
 ├── src/
-│   └── scripts/
-│       ├── register-vault-final.ps1  - Main vault registration script
-│       ├── install-context-menu.ps1   - Installer (run as Admin)
-│       └── uninstall-context-menu.ps1 - Uninstaller (run as Admin)
-├── tests/
-│   ├── test-vault-opening.ps1        - Test URI protocol methods
-│   ├── test-multi-window.ps1         - Test multi-window behavior
-│   ├── test-hot-reload.ps1           - Test config hot-reloading
-│   └── test-direct-launch.ps1        - Test direct executable launch
+│   ├── scripts/
+│   │   ├── register-vault-final.ps1  - Main vault registration + template
+│   │   ├── choose-template.ps1       - Template chooser dialog
+│   │   ├── open-md-file.ps1          - .md file handler
+│   │   ├── install-context-menu.ps1  - Installer (run as Admin)
+│   │   └── uninstall-context-menu.ps1 - Uninstaller (run as Admin)
+│   └── templates/
+│       ├── default/                  - Default template
+│       ├── zettelkasten/             - Zettelkasten template
+│       └── project-docs/            - Project documentation template
+├── tools/
+│   ├── build/                       - Build scripts
+│   └── packaging/                   - WiX installer packaging
+├── tests/                           - Development test scripts
 └── README.md
 ```
 
@@ -137,15 +203,10 @@ ObsidianQuickLaunch/
 
 See [TODO.md](TODO.md) for the complete project roadmap.
 
-**Phase 1: ✅ COMPLETE**
-- Core vault registration and opening
-- Windows Explorer context menu integration
-- Obsidian icon support
+**Phase 1: ✅ COMPLETE** — Core vault registration and context menu
+**Phase 2: ✅ COMPLETE** — Templates, chooser, .md association
 
-**Phase 2: 🚧 PLANNED**
-- Template vault system
-- Packaging and distribution
-- CI/CD and automated testing
+**Next:** Documentation, CI/CD, distribution (Chocolatey, WinGet, Scoop)
 
 ## License
 

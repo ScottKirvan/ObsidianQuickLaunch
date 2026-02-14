@@ -8,7 +8,7 @@
 
 ## Overview
 
-ObsidianQuickLaunch adds Windows Explorer context menu entries that allow you to quickly open any folder as an Obsidian vault. Right-click on a folder or within a folder and select "Open as Obsidian Vault" to instantly register and launch it in Obsidian.
+ObsidianQuickLaunch adds Windows Explorer context menu entries that allow you to quickly open any folder as an Obsidian vault. Right-click on a folder or within a folder and select "QuickLaunch Obsidian here" to instantly register and launch it in Obsidian.
 
 
 **Key Features:**
@@ -16,7 +16,10 @@ ObsidianQuickLaunch adds Windows Explorer context menu entries that allow you to
 - Preserves all currently open vaults and workspaces
 - Automatic Obsidian installation detection
 - Obsidian icon in context menu
-- Professional MSI installer with automatic registry configuration
+- **Template system** with non-destructive vault initialization
+- **Template chooser** dialog for selecting from available templates
+- **.md file association** (opt-in) for opening markdown files in Obsidian
+- Professional MSI installer with feature selection (Typical/Custom/Complete)
 
 ## Quick Start
 
@@ -24,11 +27,11 @@ For complete installation and usage instructions, see **[User Documentation](not
 
 **TL;DR:**
 1. Download and install `ObsidianQuickLaunch-{version}.msi` (requires Administrator)
-2. Right-click any folder → "Open as Obsidian Vault"
+2. Right-click any folder → "QuickLaunch Obsidian here"
 
 **Manual Installation:**
 1. Run `.\src\scripts\install-context-menu.ps1` as Administrator
-2. Right-click any folder → "Open as Obsidian Vault"
+2. Right-click any folder → "QuickLaunch Obsidian here"
 
 ## Repository Structure
 
@@ -87,7 +90,7 @@ Test scripts are located in `/tests/` directory for development use.
 
 **Current Version:** See [VERSION.md](notes/VERSION.md)
 **Phase 1:** ✅ Complete - Core functionality and context menu integration
-**Phase 2:** 🚧 Planned - Template vault system
+**Phase 2:** ✅ Complete - Template system, template chooser, .md file association
 
 See [CHANGELOG.md](notes/CHANGELOG.md) for release history.
 
