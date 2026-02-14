@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.1.0...v0.2.0) (2026-02-14)
+
+
+### Features
+
+* safety checkin - initial templating work and file association ([a11b677](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/a11b677e53564ca9cf2712291b052f88f28d857b))
+
 ## [0.1.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.0.1...v0.1.0) (2026-02-13)
 
 
