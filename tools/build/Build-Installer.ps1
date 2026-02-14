@@ -120,7 +120,9 @@ New-Item -ItemType Directory -Path $stagingScriptsPath -Force | Out-Null
 $sourceScripts = @(
     "register-vault-final.ps1",
     "install-context-menu.ps1",
-    "uninstall-context-menu.ps1"
+    "uninstall-context-menu.ps1",
+    "choose-template.ps1",
+    "open-md-file.ps1"
 )
 
 foreach ($script in $sourceScripts) {
@@ -132,6 +134,17 @@ foreach ($script in $sourceScripts) {
     else {
         Write-Warning "  Script not found: $sourcePath"
     }
+}
+
+# Copy templates to staging
+$sourceTemplatesPath = Join-Path $RepoRoot "src\templates"
+if (Test-Path $sourceTemplatesPath) {
+    $stagingTemplatesPath = Join-Path $StagingPath "templates"
+    Copy-Item $sourceTemplatesPath -Destination $stagingTemplatesPath -Recurse -Force
+    $templateCount = (Get-ChildItem $stagingTemplatesPath -Directory).Count
+    Write-Host "  Copied: templates/ ($templateCount template(s))" -ForegroundColor Gray
+} else {
+    Write-Warning "  Templates directory not found: $sourceTemplatesPath"
 }
 
 # Copy README and LICENSE if they exist

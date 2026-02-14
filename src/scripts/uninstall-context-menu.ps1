@@ -17,34 +17,32 @@ Write-Host ""
 # Registry paths for the context menu
 $regPathDirectory = "Registry::HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunch"
 $regPathBackground = "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunch"
+$regPathDirectoryTemplate = "Registry::HKEY_CLASSES_ROOT\Directory\shell\ObsidianQuickLaunchTemplate"
+$regPathBackgroundTemplate = "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\ObsidianQuickLaunchTemplate"
 
 Write-Host "Checking for installed context menu..." -ForegroundColor Cyan
 
 $found = $false
 
-# Remove folder context menu
-if (Test-Path $regPathDirectory) {
-    Write-Host "Found folder context menu" -ForegroundColor Yellow
-    try {
-        Remove-Item -Path $regPathDirectory -Recurse -Force
-        Write-Host "  Removed folder context menu" -ForegroundColor Green
-        $found = $true
-    } catch {
-        Write-Host "  ERROR: Failed to remove folder context menu" -ForegroundColor Red
-        Write-Host "  $($_.Exception.Message)" -ForegroundColor Red
-    }
-}
+# Remove all context menu entries
+$regPaths = @(
+    @{ Path = $regPathDirectory;         Name = "folder context menu" },
+    @{ Path = $regPathBackground;        Name = "background context menu" },
+    @{ Path = $regPathDirectoryTemplate; Name = "folder template chooser menu" },
+    @{ Path = $regPathBackgroundTemplate; Name = "background template chooser menu" }
+)
 
-# Remove background context menu
-if (Test-Path $regPathBackground) {
-    Write-Host "Found background context menu" -ForegroundColor Yellow
-    try {
-        Remove-Item -Path $regPathBackground -Recurse -Force
-        Write-Host "  Removed background context menu" -ForegroundColor Green
-        $found = $true
-    } catch {
-        Write-Host "  ERROR: Failed to remove background context menu" -ForegroundColor Red
-        Write-Host "  $($_.Exception.Message)" -ForegroundColor Red
+foreach ($entry in $regPaths) {
+    if (Test-Path $entry.Path) {
+        Write-Host "Found $($entry.Name)" -ForegroundColor Yellow
+        try {
+            Remove-Item -Path $entry.Path -Recurse -Force
+            Write-Host "  Removed $($entry.Name)" -ForegroundColor Green
+            $found = $true
+        } catch {
+            Write-Host "  ERROR: Failed to remove $($entry.Name)" -ForegroundColor Red
+            Write-Host "  $($_.Exception.Message)" -ForegroundColor Red
+        }
     }
 }
 

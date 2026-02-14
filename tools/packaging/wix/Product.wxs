@@ -42,8 +42,8 @@
     <!-- Embed Cabinet Files in Product -->
     <MediaTemplate EmbedCab="yes" />
 
-    <!-- UI Configuration -->
-    <UIRef Id="WixUI_InstallDir" />
+    <!-- UI Configuration: Mondo gives Typical/Custom/Complete with feature selection -->
+    <UIRef Id="WixUI_Mondo" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
 
     <!-- Installation Directory Structure -->
@@ -61,10 +61,17 @@
     </Directory>
 
     <!-- Main Feature -->
-    <Feature Id="MainFeature" Title="$(var.ProductName)" Level="1">
+    <Feature Id="MainFeature" Title="$(var.ProductName)" Level="1" ConfigurableDirectory="INSTALLFOLDER">
       <ComponentGroupRef Id="ProductFiles" />
       <ComponentRef Id="ContextMenuRegistration" />
       <ComponentRef Id="StartMenuShortcuts" />
+    </Feature>
+
+    <!-- .md File Association Feature (opt-in, unchecked by default) -->
+    <Feature Id="MdFileAssociation" Title=".md File Association"
+             Description="Add ObsidianQuickLaunch to the 'Open with' list for .md files"
+             Level="2" AllowAdvertise="no">
+      <ComponentRef Id="MdFileAssociationRegistration" />
     </Feature>
 
     <!-- Custom Action: Detect Obsidian path for icon (optional) -->
@@ -101,11 +108,65 @@
           </RegistryKey>
         </RegistryKey>
 
+        <!-- Template Chooser: Shift+Right-click ON a folder -->
+        <RegistryKey Root="HKCR" Key="Directory\shell\ObsidianQuickLaunchTemplate">
+          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault (choose template)..." />
+          <RegistryValue Type="string" Name="Extended" Value="" />
+
+          <RegistryKey Key="command">
+            <RegistryValue
+              Type="string"
+              Value="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\choose-template.ps1&quot; &quot;%V&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Template Chooser: Shift+Right-click IN a folder (background) -->
+        <RegistryKey Root="HKCR" Key="Directory\Background\shell\ObsidianQuickLaunchTemplate">
+          <RegistryValue Type="string" Name="(Default)" Value="Open as Obsidian Vault (choose template)..." />
+          <RegistryValue Type="string" Name="Extended" Value="" />
+
+          <RegistryKey Key="command">
+            <RegistryValue
+              Type="string"
+              Value="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\choose-template.ps1&quot; &quot;%V&quot;" />
+          </RegistryKey>
+        </RegistryKey>
+
         <!-- Registry key for uninstall tracking -->
         <RegistryKey Root="HKLM" Key="Software\$(var.Manufacturer)\$(var.ProductName)">
           <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
           <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" />
         </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+    <!-- .md File Association Registration (opt-in) -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="MdFileAssociationRegistration" Guid="D1A2B3C4-5E6F-7A8B-9C0D-1E2F3A4B5C6D" Win64="yes">
+        <!-- Add to 'Open with' list for .md files -->
+        <RegistryKey Root="HKCR" Key=".md\OpenWithProgIds">
+          <RegistryValue Type="string" Name="ObsidianQuickLaunch.md" Value="" />
+        </RegistryKey>
+
+        <!-- Define ObsidianQuickLaunch.md ProgId -->
+        <RegistryKey Root="HKCR" Key="ObsidianQuickLaunch.md">
+          <RegistryValue Type="string" Name="(Default)" Value="Markdown File (Obsidian)" />
+          <RegistryValue Type="string" Name="FriendlyTypeName" Value="Open in Obsidian Vault" />
+        </RegistryKey>
+
+        <RegistryKey Root="HKCR" Key="ObsidianQuickLaunch.md\shell\open">
+          <RegistryValue Type="string" Name="(Default)" Value="Open in Obsidian Vault" />
+        </RegistryKey>
+
+        <RegistryKey Root="HKCR" Key="ObsidianQuickLaunch.md\shell\open\command">
+          <RegistryValue
+            Type="string"
+            Value="powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]scripts\open-md-file.ps1&quot; &quot;%1&quot;" />
+        </RegistryKey>
+
+        <!-- KeyPath for component tracking -->
+        <RegistryValue Root="HKLM" Key="Software\$(var.Manufacturer)\$(var.ProductName)"
+          Name="MdAssociation" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 

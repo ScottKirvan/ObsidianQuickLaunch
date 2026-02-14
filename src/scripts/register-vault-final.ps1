@@ -16,7 +16,10 @@
 # This ensures vaults restore their previous workspace (open notes, tabs, etc.)
 # when reopened by this script.
 
-param([string]$VaultPath)
+param(
+    [string]$VaultPath,
+    [string]$TemplateName = "default"
+)
 
 if (-not (Test-Path $VaultPath)) {
     Write-Host "ERROR: Path does not exist: $VaultPath" -ForegroundColor Red
@@ -89,10 +92,61 @@ if (-not $vaultExists) {
     Write-Host "Vault registered!" -ForegroundColor Green
 }
 
-# Create .obsidian folder
-$obsidianFolder = Join-Path $VaultPath ".obsidian"
-if (-not (Test-Path $obsidianFolder)) {
-    New-Item -ItemType Directory -Path $obsidianFolder | Out-Null
+# Apply template (non-destructive file copy)
+function Copy-TemplateNonDestructive {
+    param([string]$TemplatePath, [string]$DestinationPath)
+
+    if (-not (Test-Path $TemplatePath)) { return $false }
+
+    $copiedCount = 0
+    $skippedCount = 0
+    $templateFiles = Get-ChildItem -Path $TemplatePath -Recurse -File -Force
+    foreach ($file in $templateFiles) {
+        $relativePath = $file.FullName.Substring($TemplatePath.Length).TrimStart('\')
+        $destFile = Join-Path $DestinationPath $relativePath
+        $destDir = Split-Path $destFile -Parent
+
+        if (-not (Test-Path $destFile)) {
+            if (-not (Test-Path $destDir)) {
+                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+            }
+            Copy-Item $file.FullName -Destination $destFile -Force
+            Write-Host "  Applied: $relativePath" -ForegroundColor Gray
+            $copiedCount++
+        } else {
+            $skippedCount++
+        }
+    }
+
+    if ($copiedCount -gt 0) {
+        Write-Host "  Template applied: $copiedCount file(s) copied, $skippedCount skipped (already exist)" -ForegroundColor Green
+    }
+    return $true
+}
+
+# Resolve template path (user templates override bundled)
+$userTemplatesRoot = Join-Path $env:APPDATA "ObsidianQuickLaunch\templates"
+$bundledTemplatesRoot = Join-Path $PSScriptRoot "..\templates"
+
+$templatePath = $null
+$userTemplatePath = Join-Path $userTemplatesRoot $TemplateName
+$bundledTemplatePath = Join-Path $bundledTemplatesRoot $TemplateName
+
+if (Test-Path $userTemplatePath) {
+    $templatePath = $userTemplatePath
+} elseif (Test-Path $bundledTemplatePath) {
+    $templatePath = $bundledTemplatePath
+}
+
+if ($templatePath) {
+    Write-Host "Applying template: $TemplateName" -ForegroundColor Cyan
+    Copy-TemplateNonDestructive -TemplatePath $templatePath -DestinationPath $VaultPath
+} else {
+    # Fallback: ensure .obsidian folder exists even without a template
+    $obsidianFolder = Join-Path $VaultPath ".obsidian"
+    if (-not (Test-Path $obsidianFolder)) {
+        New-Item -ItemType Directory -Path $obsidianFolder | Out-Null
+    }
 }
 
 # Reopen all previously open vaults + the new one
