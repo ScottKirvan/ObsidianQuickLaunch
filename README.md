@@ -1,6 +1,6 @@
 # ObsidianQuickLaunch
 
-**Windows Explorer context menu integration for Obsidian vault management**
+**Right-click menu integration to quickly open, or create and launch new vaults directly from Windows Explorer**
 
 [![License](https://img.shields.io/github/license/ScottKirvan/ObsidianQuickLaunch.svg)](LICENSE.md)
 [![Issues](https://img.shields.io/github/issues/ScottKirvan/ObsidianQuickLaunch)](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues)
