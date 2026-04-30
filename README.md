@@ -1,6 +1,6 @@
 # ObsidianQuickLaunch
 
-**Right-click menu integration to quickly open, or create and launch new vaults directly from Windows Explorer**
+**Right-click menu integration to quickly open, or create and launch new vaults directly from Windows File Explorer**
 
 [![License](https://img.shields.io/github/license/ScottKirvan/ObsidianQuickLaunch.svg)](LICENSE.md)
 [![Issues](https://img.shields.io/github/issues/ScottKirvan/ObsidianQuickLaunch)](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues)
