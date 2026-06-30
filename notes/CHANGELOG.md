@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.1...v0.2.2) (2026-06-30)
+
+
+### Bug Fixes
+
+* add shared release notes and Discord notify workflows ([f4d119e](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/f4d119ea55c764a4b60dc8581df86f69577ff883))
+
 ## [0.2.1](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.0...v0.2.1) (2026-06-30)
 
 
