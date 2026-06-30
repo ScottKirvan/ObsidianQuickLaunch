@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.0...v0.2.1) (2026-06-30)
+
+
+### Bug Fixes
+
+* remove stale local templates in favor of ScottKirvan/.github shared templates ([04d22ee](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/04d22ee321b92ff96da698ea8e9136d427252b9c))
+* update Discord invite URL to correct server link ([9b96efd](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/9b96efda945af411051e31522e8af93f6d56f452))
+
 ## [0.2.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.1.0...v0.2.0) (2026-02-14)
 
 
