@@ -108,7 +108,7 @@ See [CHANGELOG.md](notes/CHANGELOG.md) for release history.
 
 - **Issues**: [GitHub Issues](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues)
 - **LinkedIn**: [Scott Kirvan](https://www.linkedin.com/in/scottkirvan/)
-- **Discord**: [cptvideo](https://discord.gg/TSKHvVFYxB)
+- **Discord**: [cptvideo](https://discord.gg/TN6XJSNK5Y)
 
 ---
 
