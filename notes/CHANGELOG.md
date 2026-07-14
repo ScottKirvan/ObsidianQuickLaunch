@@ -7,6 +7,8 @@
 
 * add update-changelog-prs job to release workflow ([23c3122](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/23c31223c274ae854ba2114bc40ac02b75912dea))
 
+Includes PRs: [#10](https://github.com/ScottKirvan/ObsidianQuickLaunch/pull/10), [#9](https://github.com/ScottKirvan/ObsidianQuickLaunch/pull/9)
+
 ## [0.2.2](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.1...v0.2.2) (2026-06-30)
 
 
