@@ -1,0 +1,32 @@
+name: Manual — Preview Release Notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Anticipated next version tag (e.g. v1.2.0) — need not exist yet
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  models: read
+
+jobs:
+  preview:
+    uses: ScottKirvan/.github/.github/workflows/reusable-preview-release-notes.yml@main
+    with:
+      tag_name: ${{ inputs.tag_name }}
+      project_name: "ObsidianQuickLaunch"
+      project_context: "ObsidianQuickLaunch is a Windows utility that puts Obsidian vault shortcuts in the right-click context menu in File Explorer. Its audience is everyday Obsidian users — not developers — who want to open or create a vault without launching Obsidian first. Write changes in terms of how vault access becomes faster or more reliable."
+      header: |
+        ## ObsidianQuickLaunch
+
+        > Open or create Obsidian vaults from the Windows right-click context menu.
+
+        🫶❤️[Support this project](https://ko-fi.com/ScottKirvan) · 📖 [User Guide](https://www.scottkirvan.com/ObsidianQuickLaunch/) · 💬 [Discord](https://discord.gg/TN6XJSNK5Y) · 🐛 [Report a Bug](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=bug_report.md) · ✨ [Request Feature](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=feature_request.md) · 📋 [Changelog](https://github.com/ScottKirvan/ObsidianQuickLaunch/blob/main/notes/CHANGELOG.md)
+
+        ---
+      footer: ""
+      changelog_path: ""
+    secrets: inherit

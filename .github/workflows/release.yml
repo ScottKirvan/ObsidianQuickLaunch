@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -31,16 +32,17 @@ jobs:
     with:
       tag_name: ${{ needs.release-please.outputs.tag_name }}
       project_name: "ObsidianQuickLaunch"
-      project_context: "ObsidianQuickLaunch is a Windows utility that adds a right-click context menu to open or create Obsidian vaults directly from File Explorer."
+      project_context: "ObsidianQuickLaunch is a Windows utility that puts Obsidian vault shortcuts in the right-click context menu in File Explorer. Its audience is everyday Obsidian users — not developers — who want to open or create a vault without launching Obsidian first. Write changes in terms of how vault access becomes faster or more reliable."
       header: |
         ## ObsidianQuickLaunch
 
         > Open or create Obsidian vaults from the Windows right-click context menu.
 
+        🫶❤️[Support this project](https://ko-fi.com/ScottKirvan) · 📖 [User Guide](https://www.scottkirvan.com/ObsidianQuickLaunch/) · 💬 [Discord](https://discord.gg/TN6XJSNK5Y) · 🐛 [Report a Bug](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=bug_report.md) · ✨ [Request Feature](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=feature_request.md) · 📋 [Changelog](https://github.com/ScottKirvan/ObsidianQuickLaunch/blob/main/notes/CHANGELOG.md)
+
         ---
-      footer: |
-        ---
-        📖 [User Guide](https://www.scottkirvan.com/ObsidianQuickLaunch/) · 💬 [Discord](https://discord.gg/TN6XJSNK5Y) · 🐛 [Report a Bug](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=bug_report.md) · ✨ [Request Feature](https://github.com/ScottKirvan/ObsidianQuickLaunch/issues/new?template=feature_request.md)
+      footer: ""
+      changelog_path: ""
     secrets: inherit
 
   update-changelog-prs:
@@ -57,4 +59,6 @@ jobs:
     with:
       tag_name: ${{ needs.release-please.outputs.tag_name }}
       project_name: "ObsidianQuickLaunch"
+      emoji: "📂"
+      discord_blurb: ${{ needs.improve-release-notes.outputs.discord_blurb }}
     secrets: inherit
