@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.3...v0.3.0) (2026-08-29)
+
+
+### Features
+
+* add pre-release staging workflow, update release pipeline ([12e2f0f](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/12e2f0f3fc35f4adf901c5bb22b13d2b7cfc82d8))
+
+
+### Bug Fixes
+
+* add changelog link to release and staging footers ([e18e97c](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/e18e97c9269faedf14da178c3463c8b7501d51e6))
+* move link banner to header, add Ko-Fi, update context, add preview workflow ([6473164](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/6473164ef62aa9679e968d26f1370118ca38c985))
+
 ## [0.2.3](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.2...v0.2.3) (2026-07-06)
 
 
