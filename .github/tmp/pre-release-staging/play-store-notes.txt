@@ -1,0 +1,7 @@
+What's New:
+- Added a built-in search bar to the documentation site so you can quickly look up vault setup instructions and shortcut guides.
+- Added direct header links to documentation, community channels, and support resources like Ko-Fi.
+
+What's Fixed:
+- Adjusted documentation page scaling and text density for a cleaner, more comfortable reading experience.
+- Added changelog links directly to release footers to make finding version history much easier.

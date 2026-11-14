@@ -1,0 +1,5 @@
+ObsidianQuickLaunch v0.3.0 upgrades the documentation site with built-in search and refreshed navigation.
+- Local search across all documentation pages
+- Cleaner, more compact layout and text sizing
+- Header links for community and support resources
+Full notes + downloads →
