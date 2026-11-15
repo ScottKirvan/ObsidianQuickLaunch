@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.3...v0.3.0) (2026-11-14)
+
+
+### Features
+
+* add pre-release staging workflow, update release pipeline ([12e2f0f](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/12e2f0f3fc35f4adf901c5bb22b13d2b7cfc82d8))
+
+
+### Bug Fixes
+
+* add a 7-day cooldown to Dependabot version updates ([191167d](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/191167d574f3e735ac18c54d739638f070017583))
+* add changelog link to release and staging footers ([e18e97c](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/e18e97c9269faedf14da178c3463c8b7501d51e6))
+* add Dependabot config for monthly grouped dependency updates ([aaf5d86](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/aaf5d86126f162eab9c1de4da5886eb117ceffbf))
+* add VitePress local search provider to docs ([f0c366b](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/f0c366b6471678142e8f787cb3f14b7cbb830cc0))
+* move link banner to header, add Ko-Fi, update context, add preview workflow ([6473164](https://github.com/ScottKirvan/ObsidianQuickLaunch/commit/6473164ef62aa9679e968d26f1370118ca38c985))
+
 ## [0.2.3](https://github.com/ScottKirvan/ObsidianQuickLaunch/compare/v0.2.2...v0.2.3) (2026-07-06)
 
 
